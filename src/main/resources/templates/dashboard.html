@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Expense Tracker Dashboard</h1>
+        <nav>
+            <a href="/index">Home</a>
+            <a href="/incomeform">Add Income</a>
+            <a href="/expenseform">Add Expense</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/login">Logout</a>
+        </nav>
+    </header>
+    <section>
+        <h2>Overview</h2>
+        <div id="overview">
+            <p>Total Income: <span th:text="${totalIncome}"></span></p>
+            <p>Total Expenses: <span th:text="${totalExpenses}"></span></p>
+            <p>Total Savings: <span th:text="${totalSavings}"></span></p>
+        </div>
+
+        <h2>Recent Transactions</h2>
+        <ul id="recentTransactions">
+            <li th:each="transaction : ${recentTransactions}">
+                <span th:text="${transaction.date}"></span> -
+                <span th:text="${transaction.description}"></span>:
+                <span th:text="${transaction.amount}"></span>
+            </li>
+        </ul>
+
+        <h2>Category-wise Spending</h2>
+        <div id="spendingAnalysis">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="category : ${categorySpending}">
+                        <td th:text="${category.name}"></td>
+                        <td th:text="${category.amount}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>Your Incomes</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Source</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="income : ${incomes}">
+                    <td th:text="${income.amount}"></td>
+                    <td th:text="${income.source}"></td>
+                    <td th:text="${income.date}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Your Expenses</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="expense : ${expenses}">
+                    <td th:text="${expense.amount}"></td>
+                    <td th:text="${expense.category}"></td>
+                    <td th:text="${expense.date}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+    <script src="dashboard.js"></script>
+</body>
+</html>
