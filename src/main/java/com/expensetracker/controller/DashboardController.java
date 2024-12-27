@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,19 +47,42 @@ public class DashboardController {
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
 
-                // Fetch user-specific income data
+                // Total Income
                 List<Income> incomes = incomeRepository.findAllByUser(user);
                 double totalIncome = incomes.stream().mapToDouble(Income::getAmount).sum();
+                model.addAttribute("totalIncome", totalIncome);
 
-                // Fetch user-specific expenses data
+                // Total Expenses
                 List<Expense> expenses = expenseRepository.findAllByUser(user);
                 double totalExpenses = expenses.stream().mapToDouble(Expense::getAmount).sum();
-
-                // Add income and expense data to the model
-                model.addAttribute("incomes", incomes);
-                model.addAttribute("totalIncome", totalIncome);
-                model.addAttribute("expenses", expenses);
                 model.addAttribute("totalExpenses", totalExpenses);
+
+                // Total Savings
+                double totalSavings = totalIncome - totalExpenses;
+                model.addAttribute("totalSavings", totalSavings);
+
+                // Recent Transactions (last 5 transactions)
+                List<Expense> recentExpenses = expenseRepository.findTop5ByUserOrderByDateDesc(user);
+                List<Income> recentIncomes = incomeRepository.findTop5ByUserOrderByDateDesc(user); // Add filtering by user
+                List<Object> recentTransactions = new ArrayList<>();
+                recentTransactions.addAll(recentExpenses);
+                recentTransactions.addAll(recentIncomes);
+                recentTransactions.sort(Comparator.comparing(transaction -> {
+                    if (transaction instanceof Income) {
+                        return ((Income) transaction).getDate();
+                    } else {
+                        return ((Expense) transaction).getDate();
+                    }
+                }).reversed());
+                model.addAttribute("recentTransactions", recentTransactions);
+
+                // Category-wise Spending
+                List<Object[]> categorySpending = expenseRepository.getCategoryWiseSpendingByUser(user);
+                model.addAttribute("categorySpending", categorySpending);
+
+                // Add all incomes and expenses for detailed tables
+                model.addAttribute("incomes", incomes);
+                model.addAttribute("expenses", expenses);
             }
         }
 

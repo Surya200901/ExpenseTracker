@@ -2,9 +2,13 @@ package com.expensetracker.service;
 
 import com.expensetracker.model.Expense;
 import com.expensetracker.model.Income;
+import com.expensetracker.model.User;
 import com.expensetracker.repository.ExpenseRepository;
 import com.expensetracker.repository.IncomeRepository;
+import com.expensetracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,9 +25,26 @@ public class DashboardService {
     @Autowired
     private IncomeRepository incomeRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    private User getAuthenticatedUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            return userRepository.findByUsername(username).orElse(null);
+        }
+        return null;
+    }
+
     public Map<String, Object> getDashboardOverview() {
-        double totalIncome = incomeRepository.getTotalIncome();
-        double totalExpenses = expenseRepository.getTotalExpenses();
+        User user = getAuthenticatedUser();
+        if (user == null) {
+            throw new RuntimeException("User not authenticated");
+        }
+
+        double totalIncome = incomeRepository.getTotalIncome(user);
+        double totalExpenses = expenseRepository.getTotalExpenses(user);
         double totalSavings = totalIncome - totalExpenses;
 
         Map<String, Object> overview = new HashMap<>();
@@ -35,8 +56,13 @@ public class DashboardService {
     }
 
     public Map<String, Object> getRecentTransactions() {
-        List<Income> recentIncome = incomeRepository.findTop5ByOrderByDateDesc();
-        List<Expense> recentExpenses = expenseRepository.findTop5ByOrderByDateDesc();
+        User user = getAuthenticatedUser();
+        if (user == null) {
+            throw new RuntimeException("User not authenticated");
+        }
+
+        List<Income> recentIncome = incomeRepository.findTop5ByUserOrderByDateDesc(user);
+        List<Expense> recentExpenses = expenseRepository.findTop5ByUserOrderByDateDesc(user);
 
         Map<String, Object> recentTransactions = new HashMap<>();
         recentTransactions.put("recentIncome", recentIncome);
@@ -46,7 +72,12 @@ public class DashboardService {
     }
 
     public List<Map<String, Object>> getSpendingAnalysis() {
-        List<Object[]> results = expenseRepository.getCategoryWiseSpending();
+        User user = getAuthenticatedUser();
+        if (user == null) {
+            throw new RuntimeException("User not authenticated");
+        }
+
+        List<Object[]> results = expenseRepository.getCategoryWiseSpendingByUser(user);
         List<Map<String, Object>> spendingAnalysis = new ArrayList<>();
 
         for (Object[] result : results) {
@@ -58,5 +89,4 @@ public class DashboardService {
 
         return spendingAnalysis;
     }
-
 }

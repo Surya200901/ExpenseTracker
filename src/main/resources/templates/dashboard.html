@@ -25,32 +25,31 @@
             <p>Total Savings: <span th:text="${totalSavings}"></span></p>
         </div>
 
-        <h2>Recent Transactions</h2>
-        <ul id="recentTransactions">
-            <li th:each="transaction : ${recentTransactions}">
-                <span th:text="${transaction.date}"></span> -
-                <span th:text="${transaction.description}"></span>:
-                <span th:text="${transaction.amount}"></span>
-            </li>
-        </ul>
+		<h2>Recent Transactions</h2>
+		<ul id="recentTransactions">
+		    <li th:each="transaction : ${recentTransactions}">
+		        <span th:text="${transaction instanceof T(com.expensetracker.model.Expense) ? 'Expense' : 'Income'}"></span> -
+		        <span th:text="${transaction instanceof T(com.expensetracker.model.Expense) ? transaction.category : transaction.source}"></span>:
+		        <span th:text="${transaction.amount}"></span> on
+		        <span th:text="${transaction.date}"></span>
+		    </li>
+		</ul>
 
-        <h2>Category-wise Spending</h2>
-        <div id="spendingAnalysis">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Category</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="category : ${categorySpending}">
-                        <td th:text="${category.name}"></td>
-                        <td th:text="${category.amount}"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+		<h2>Category-wise Spending</h2>
+		<table>
+		    <thead>
+		        <tr>
+		            <th>Category</th>
+		            <th>Amount</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		        <tr th:each="category : ${categorySpending}">
+		            <td th:text="${category[0]}"></td>
+		            <td th:text="${category[1]}"></td>
+		        </tr>
+		    </tbody>
+		</table>
 
         <h2>Your Incomes</h2>
         <table>
