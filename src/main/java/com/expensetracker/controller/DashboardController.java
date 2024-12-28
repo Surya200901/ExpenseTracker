@@ -14,11 +14,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.stereotype.Controller;
 
+import com.google.gson.Gson;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/dashboard")
@@ -63,7 +70,7 @@ public class DashboardController {
 
                 // Recent Transactions (last 5 transactions)
                 List<Expense> recentExpenses = expenseRepository.findTop5ByUserOrderByDateDesc(user);
-                List<Income> recentIncomes = incomeRepository.findTop5ByUserOrderByDateDesc(user); // Add filtering by user
+                List<Income> recentIncomes = incomeRepository.findTop5ByUserOrderByDateDesc(user);
                 List<Object> recentTransactions = new ArrayList<>();
                 recentTransactions.addAll(recentExpenses);
                 recentTransactions.addAll(recentIncomes);
@@ -78,7 +85,21 @@ public class DashboardController {
 
                 // Category-wise Spending
                 List<Object[]> categorySpending = expenseRepository.getCategoryWiseSpendingByUser(user);
-                model.addAttribute("categorySpending", categorySpending);
+                List<Map<String, Object>> categorySpendingData = categorySpending.stream()
+                        .map(cs -> {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("category", cs[0]);
+                            map.put("amount", cs[1]);
+                            return map;
+                        })
+                        .collect(Collectors.toList());
+                model.addAttribute("categorySpendingJson", new Gson().toJson(categorySpendingData));
+
+                // Income and Expense Trends (last 6 months)
+                List<Map<String, Object>> incomeTrends = calculateMonthlyTrends(incomes);
+                List<Map<String, Object>> expenseTrends = calculateMonthlyTrends(expenses);
+                model.addAttribute("incomeTrendsJson", new Gson().toJson(incomeTrends));
+                model.addAttribute("expenseTrendsJson", new Gson().toJson(expenseTrends));
 
                 // Add all incomes and expenses for detailed tables
                 model.addAttribute("incomes", incomes);
@@ -87,6 +108,34 @@ public class DashboardController {
         }
 
         return "dashboard"; // Render dashboard.html
+    }
+
+    private List<Map<String, Object>> calculateMonthlyTrends(List<?> transactions) {
+        Map<String, Double> monthlyData = new TreeMap<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yyyy");
+
+        transactions.forEach(transaction -> {
+            LocalDate date;
+            double amount;
+            if (transaction instanceof Income) {
+                date = ((Income) transaction).getDate(); // Ensure `Income` uses `LocalDate`
+                amount = ((Income) transaction).getAmount();
+            } else {
+                date = ((Expense) transaction).getDate(); // Ensure `Expense` uses `LocalDate`
+                amount = ((Expense) transaction).getAmount();
+            }
+            String month = date.format(formatter);
+            monthlyData.put(month, monthlyData.getOrDefault(month, 0.0) + amount);
+        });
+
+        return monthlyData.entrySet().stream()
+                .map(entry -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("month", entry.getKey());
+                    map.put("amount", entry.getValue());
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/overview")

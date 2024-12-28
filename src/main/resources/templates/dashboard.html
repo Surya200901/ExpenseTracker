@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Add Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
@@ -20,36 +22,42 @@
     <section>
         <h2>Overview</h2>
         <div id="overview">
-            <p>Total Income: <span th:text="${totalIncome}"></span></p>
-            <p>Total Expenses: <span th:text="${totalExpenses}"></span></p>
-            <p>Total Savings: <span th:text="${totalSavings}"></span></p>
+			<p>Total Income: <span th:text="${totalIncome}">Total Income</span></p>
+			<p>Total Expenses: <span th:text="${totalExpenses}">Total Expenses</span></p>
+			<p>Total Savings: <span th:text="${totalSavings}">Total Savings</span></p>
         </div>
 
-		<h2>Recent Transactions</h2>
-		<ul id="recentTransactions">
-		    <li th:each="transaction : ${recentTransactions}">
-		        <span th:text="${transaction instanceof T(com.expensetracker.model.Expense) ? 'Expense' : 'Income'}"></span> -
-		        <span th:text="${transaction instanceof T(com.expensetracker.model.Expense) ? transaction.category : transaction.source}"></span>:
-		        <span th:text="${transaction.amount}"></span> on
-		        <span th:text="${transaction.date}"></span>
-		    </li>
-		</ul>
+        <!-- Income and Expense Trends (Graph Representation) -->
+        <h2>Income and Expense Trends (Last 6 Months)</h2>
+        <div style="width: 80%; margin: 0 auto;">
+            <canvas id="incomeExpenseChart"></canvas>
+        </div>
 
-		<h2>Category-wise Spending</h2>
-		<table>
-		    <thead>
-		        <tr>
-		            <th>Category</th>
-		            <th>Amount</th>
-		        </tr>
-		    </thead>
-		    <tbody>
-		        <tr th:each="category : ${categorySpending}">
-		            <td th:text="${category[0]}"></td>
-		            <td th:text="${category[1]}"></td>
-		        </tr>
-		    </tbody>
-		</table>
+        <h2>Recent Transactions</h2>
+        <ul id="recentTransactions">
+            <li th:each="transaction : ${recentTransactions}">
+                <span th:text="${transaction instanceof T(com.expensetracker.model.Expense) ? 'Expense' : 'Income'}"></span> - 
+                <span th:text="${transaction instanceof T(com.expensetracker.model.Expense) ? transaction.category : transaction.source}"></span>: 
+                <span th:text="${transaction.amount}"></span> on
+                <span th:text="${transaction.date}"></span>
+            </li>
+        </ul>
+
+        <h2>Category-wise Spending</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="category : ${categorySpending}">
+                    <td th:text="${category[0]}"></td>
+                    <td th:text="${category[1]}"></td>
+                </tr>
+            </tbody>
+        </table>
 
         <h2>Your Incomes</h2>
         <table>
@@ -87,6 +95,72 @@
             </tbody>
         </table>
     </section>
+
     <script src="dashboard.js"></script>
+    <script>
+        // Correctly pass the JSON data from Thymeleaf to JavaScript by escaping it properly
+        var incomeTrendsJson = /*[[${incomeTrendsJson}]]*/ '[]';
+        var expenseTrendsJson = /*[[${expenseTrendsJson}]]*/ '[]';
+
+        // Parse the JSON data for income and expense trends
+        var incomeData = JSON.parse(incomeTrendsJson);
+        var expenseData = JSON.parse(expenseTrendsJson);
+
+        // Extract labels (months) and data values
+        var months = incomeData.map(function(entry) { return entry.month; });
+        var incomeAmounts = incomeData.map(function(entry) { return entry.amount; });
+        var expenseAmounts = expenseData.map(function(entry) { return entry.amount; });
+
+        // Create the chart
+        var ctx = document.getElementById('incomeExpenseChart').getContext('2d');
+        var incomeExpenseChart = new Chart(ctx, {
+            type: 'line', // Line chart
+            data: {
+                labels: months, // X-axis labels (months)
+                datasets: [{
+                    label: 'Income',
+                    data: incomeAmounts,
+                    borderColor: 'green',
+                    backgroundColor: 'rgba(0, 255, 0, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,  // Add points to make the data more visible
+                    pointBackgroundColor: 'green'
+                }, {
+                    label: 'Expense',
+                    data: expenseAmounts,
+                    borderColor: 'red',
+                    backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,  // Add points to make the data more visible
+                    pointBackgroundColor: 'red'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Amount'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Months'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

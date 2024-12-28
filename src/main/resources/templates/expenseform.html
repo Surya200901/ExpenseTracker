@@ -1,25 +1,135 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Expense</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Expense Management</title>
+    <script>
+        // Function to open the edit popup and populate fields
+        function openEditPopup(button) {
+            var id = button.getAttribute('data-id');
+            var category = button.getAttribute('data-category');
+            var amount = button.getAttribute('data-amount');
+            var date = button.getAttribute('data-date');
+
+            document.getElementById("edit-id").value = id;
+            document.getElementById("edit-category").value = category;
+            document.getElementById("edit-amount").value = amount;
+            document.getElementById("edit-date").value = date;
+
+            document.getElementById("edit-popup").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        // Function to close the edit popup
+        function closeEditPopup() {
+            document.getElementById("edit-popup").style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+    </script>
+    <style>
+        /* Popup styling */
+        #edit-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        #edit-popup form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #edit-popup label, #edit-popup input, #edit-popup button {
+            margin: 10px 0;
+        }
+
+        #edit-popup button {
+            align-self: flex-end;
+        }
+
+        /* Overlay for popup */
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Add Expense</h1>
-    </header>
-	<form th:action="@{/addExpense}" method="post">
-	    <input type="hidden" name="_csrf" th:value="${_csrf.token}">
-	    <label for="category">Category:</label>
-	    <input type="text" id="category" name="category" required>
-	    <label for="amount">Amount:</label>
-	    <input type="number" id="amount" name="amount" required>
-	    <label for="date">Date:</label>
-	    <input type="date" id="date" name="date" th:value="${#dates.format(new java.util.Date(), 'yyyy-MM-dd')}" required>
-	    <button type="submit">Add Expense</button>
-	</form>
+<header>
+    <h1>Expense Management</h1>
+    <nav>
+        <a href="/index">Home</a>
+        <a href="/incomeform">Add Income</a>
+        <a href="/expenseform">Add Expense</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/login">Logout</a>
+    </nav>
+</header>
+<main>
+    <!-- Form to Add Expense -->
+    <form th:action="@{/addExpense}" method="post">
+        <label for="category">Category:</label>
+        <input type="text" id="category" name="category" placeholder="e.g., Food, Travel" required>
 
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" name="amount" placeholder="e.g., 500" step="0.01" required>
+
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" th:value="${#dates.format(new java.util.Date(), 'yyyy-MM-dd')}" required>
+
+        <button type="submit">Add Expense</button>
+    </form>
+
+    <h2>Added Expenses</h2>
+    <!-- Display Added Expenses -->
+    <div>
+        <div th:each="expense : ${expenses}" style="margin: 10px 0;">
+            <span th:text="${expense.category}" style="margin-right: 20px;"></span>
+            <span th:text="${expense.amount}" style="margin-right: 20px;"></span>
+            <span th:text="${expense.date}" style="margin-right: 20px;"></span>
+            <a th:href="@{/deleteExpense/{id}(id=${expense.id})}" style="margin-right: 10px;">Delete</a>
+            <button type="button"
+                    th:data-id="${expense.id}"
+                    th:data-category="${expense.category}"
+                    th:data-amount="${expense.amount}"
+                    th:data-date="${expense.date}"
+                    onclick="openEditPopup(this)">
+                Edit
+            </button>
+        </div>
+    </div>
+
+    <!-- Popup for Editing Expense -->
+    <div id="overlay" onclick="closeEditPopup()"></div>
+    <div id="edit-popup">
+        <form th:action="@{/updateExpense}" method="post">
+            <input type="hidden" id="edit-id" name="id">
+            <label for="edit-category">Category:</label>
+            <input type="text" id="edit-category" name="category" required>
+
+            <label for="edit-amount">Amount:</label>
+            <input type="number" id="edit-amount" name="amount" step="0.01" required>
+
+            <label for="edit-date">Date:</label>
+            <input type="date" id="edit-date" name="date" required>
+
+            <button type="submit">Update</button>
+            <button type="button" onclick="closeEditPopup()">Cancel</button>
+        </form>
+    </div>
+</main>
 </body>
 </html>
