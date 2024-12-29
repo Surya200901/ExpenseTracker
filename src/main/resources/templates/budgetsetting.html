@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Budget Setting</title>
+</head>
+<body>
+    <h1>Set Your Monthly Budget</h1>
+    
+	<form method="post" th:action="@{/budgetsetting}">
+	    <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+	    <label for="budget">Monthly Budget: </label>
+	    <input type="number" id="budget" name="budget" th:value="${currentBudget}" required />
+	    <button type="submit">Save</button>
+	</form>
+
+    
+    <p>Current Budget for <span th:text="${T(java.time.Month).from(T(java.time.LocalDate).now()).toString()}" />: <span th:text="${currentBudget}"></span></p>
+</body>
+</html>

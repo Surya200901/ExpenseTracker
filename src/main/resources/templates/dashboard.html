@@ -16,16 +16,22 @@
             <a href="/incomeform">Add Income</a>
             <a href="/expenseform">Add Expense</a>
             <a href="/dashboard">Dashboard</a>
-            <a href="/login">Logout</a>
+			<a href="/budgetsetting">Budget-Setting</a>
+			<a href="/login">Logout</a>
         </nav>
     </header>
     <section>
         <h2>Overview</h2>
         <div id="overview">
-			<p>Total Income: <span th:text="${totalIncome}">Total Income</span></p>
-			<p>Total Expenses: <span th:text="${totalExpenses}">Total Expenses</span></p>
-			<p>Total Savings: <span th:text="${totalSavings}">Total Savings</span></p>
+            <p>Total Income: <span th:text="${totalIncome}">Total Income</span></p>
+            <p>Total Expenses: <span th:text="${totalExpenses}">Total Expenses</span></p>
+            <p>Total Savings: <span th:text="${totalSavings}">Total Savings</span></p>
         </div>
+		
+		<div class="budget-section">
+		    <h2>Current Month's Budget</h2>
+		    <p th:text="'$' + ${currentBudget}"></p>
+		</div>
 
         <!-- Income and Expense Trends (Graph Representation) -->
         <h2>Income and Expense Trends (Last 6 Months)</h2>
@@ -96,68 +102,87 @@
         </table>
     </section>
 
-    <script src="dashboard.js"></script>
     <script>
-        // Correctly pass the JSON data from Thymeleaf to JavaScript by escaping it properly
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchDashboardData();
+        });
+
+        function fetchDashboardData() {
+            fetch('/dashboard/overview')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('overview').innerHTML = `
+                        <p>Total Income: $${data.totalIncome}</p>
+                        <p>Total Expenses: $${data.totalExpenses}</p>
+                        <p>Total Savings: $${data.totalSavings}</p>
+                    `;
+                });
+
+            fetch('/dashboard/recent-transactions')
+                .then(response => response.json())
+                .then(data => {
+                    const transactionsList = document.getElementById('recentTransactions');
+                    transactionsList.innerHTML = `
+                        <h3>Recent Income</h3>
+                        <ul>${data.recentIncome.map(income => `<li>${income.description}: $${income.amount}</li>`).join('')}</ul>
+                        <h3>Recent Expenses</h3>
+                        <ul>${data.recentExpenses.map(expense => `<li>${expense.description}: $${expense.amount}</li>`).join('')}</ul>
+                    `;
+                });
+
+            fetch('/dashboard/spending-analysis')
+                .then(response => response.json())
+                .then(data => {
+                    const analysisChart = document.getElementById('analysis-chart');
+                    analysisChart.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                });
+        }
+
         var incomeTrendsJson = /*[[${incomeTrendsJson}]]*/ '[]';
         var expenseTrendsJson = /*[[${expenseTrendsJson}]]*/ '[]';
 
-        // Parse the JSON data for income and expense trends
         var incomeData = JSON.parse(incomeTrendsJson);
         var expenseData = JSON.parse(expenseTrendsJson);
 
-        // Extract labels (months) and data values
-        var months = incomeData.map(function(entry) { return entry.month; });
-        var incomeAmounts = incomeData.map(function(entry) { return entry.amount; });
-        var expenseAmounts = expenseData.map(function(entry) { return entry.amount; });
+        var months = incomeData.map(entry => entry.month);
+        var incomeAmounts = incomeData.map(entry => entry.amount);
+        var expenseAmounts = expenseData.map(entry => entry.amount);
 
-        // Create the chart
         var ctx = document.getElementById('incomeExpenseChart').getContext('2d');
         var incomeExpenseChart = new Chart(ctx, {
-            type: 'line', // Line chart
+            type: 'line',
             data: {
-                labels: months, // X-axis labels (months)
-                datasets: [{
-                    label: 'Income',
-                    data: incomeAmounts,
-                    borderColor: 'green',
-                    backgroundColor: 'rgba(0, 255, 0, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 5,  // Add points to make the data more visible
-                    pointBackgroundColor: 'green'
-                }, {
-                    label: 'Expense',
-                    data: expenseAmounts,
-                    borderColor: 'red',
-                    backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 5,  // Add points to make the data more visible
-                    pointBackgroundColor: 'red'
-                }]
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: incomeAmounts,
+                        borderColor: 'green',
+                        backgroundColor: 'rgba(0, 255, 0, 0.1)',
+                        fill: true
+                    },
+                    {
+                        label: 'Expense',
+                        data: expenseAmounts,
+                        borderColor: 'red',
+                        backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                        fill: true
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 scales: {
                     y: {
                         beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Amount'
-                        }
+                        title: { display: true, text: 'Amount' }
                     },
                     x: {
-                        title: {
-                            display: true,
-                            text: 'Months'
-                        }
+                        title: { display: true, text: 'Months' }
                     }
                 },
                 plugins: {
-                    legend: {
-                        position: 'top'
-                    }
+                    legend: { position: 'top' }
                 }
             }
         });

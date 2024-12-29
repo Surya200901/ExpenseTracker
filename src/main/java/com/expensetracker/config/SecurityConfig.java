@@ -24,7 +24,10 @@ public class SecurityConfig {
                 .requestMatchers("/", "/index", "/register", "/login", "/error", 
                                  "/css/**", "/js/**", 
                                  "/incomeform",
-                                 "/addincome").permitAll()
+                                 "/addincome",
+                                 "/dashboard",
+                                 "/budgetsetting",
+                                 "/expenseform").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(login -> login

@@ -1,11 +1,13 @@
 package com.expensetracker.controller;
 
+import com.expensetracker.model.Budget;
 import com.expensetracker.model.Expense;
 import com.expensetracker.model.Income;
 import com.expensetracker.model.User;
 import com.expensetracker.repository.ExpenseRepository;
 import com.expensetracker.repository.IncomeRepository;
 import com.expensetracker.repository.UserRepository;
+import com.expensetracker.service.BudgetService;
 import com.expensetracker.service.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,6 +44,10 @@ public class DashboardController {
 
     @Autowired
     private ExpenseRepository expenseRepository;
+    
+    @Autowired
+    private BudgetService budgetService;
+
 
     @GetMapping
     public String dashboard(Model model) {
@@ -53,6 +59,8 @@ public class DashboardController {
 
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
+                
+                int userId = user.getId().intValue();
 
                 // Total Income
                 List<Income> incomes = incomeRepository.findAllByUser(user);
@@ -67,6 +75,10 @@ public class DashboardController {
                 // Total Savings
                 double totalSavings = totalIncome - totalExpenses;
                 model.addAttribute("totalSavings", totalSavings);
+
+                // Fetch the budget for the current month
+                Optional<Budget> currentBudget = budgetService.getBudgetForCurrentMonth(userId); // Pass the int userId
+                currentBudget.ifPresent(budget -> model.addAttribute("currentBudget", budget.getAmount()));
 
                 // Recent Transactions (last 5 transactions)
                 List<Expense> recentExpenses = expenseRepository.findTop5ByUserOrderByDateDesc(user);
