@@ -1,19 +1,95 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Budget Setting</title>
+    <style>
+        /* Add your styling here */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        label {
+            font-size: 16px;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 200px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        p {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var form = document.querySelector("form");
+            var budgetInput = document.getElementById("budget");
+
+            form.addEventListener("submit", function(event) {
+                // Prevent form submission to handle it via JS
+                event.preventDefault();
+
+                // If input is empty, set it to 0 before submission
+                if (!budgetInput.value.trim()) {
+                    budgetInput.value = 0;
+                }
+
+                // Clear the input field after submission
+                setTimeout(function() {
+                    budgetInput.value = "";
+                }, 100);
+
+                // Now submit the form after clearing input (programmatically)
+                form.submit();
+            });
+        });
+    </script>
 </head>
 <body>
     <h1>Set Your Monthly Budget</h1>
-    
-	<form method="post" th:action="@{/budgetsetting}">
-	    <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
-	    <label for="budget">Monthly Budget: </label>
-	    <input type="number" id="budget" name="budget" th:value="${currentBudget}" required />
-	    <button type="submit">Save</button>
-	</form>
 
-    
-    <p>Current Budget for <span th:text="${T(java.time.Month).from(T(java.time.LocalDate).now()).toString()}" />: <span th:text="${currentBudget}"></span></p>
+    <form method="post" th:action="@{/budgetsetting}">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+        <label for="budget">Monthly Budget: </label>
+        <input type="number" id="budget" name="budget" th:value="${currentBudget}" required />
+
+        <button type="submit">Save</button>
+    </form>
+
+    <p>Current Budget for <span th:text="${T(java.time.Month).from(T(java.time.LocalDate).now()).toString()}" />: 
+        <span th:text="${currentBudget}"></span>
+    </p>
 </body>
 </html>

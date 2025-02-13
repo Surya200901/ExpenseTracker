@@ -1,42 +1,290 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expense Tracker</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            margin-top: 50px;
-        }
-        h1 {
-            color: #007bff;
-        }
-        .btn-primary {
-            background-color: #007bff;
-        }
-    </style>
-</head>
+	<head>
+	    <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title>Expense Tracker</title>
+	    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+	    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+	    <style>
+	        body {
+	            font-family: 'Roboto', sans-serif;
+	            background: linear-gradient(135deg, #1d2b64 0%, #f8cdda 100%);
+	            color: #343a40;
+	            overflow-x: hidden;
+	            animation: gradientShift 8s infinite alternate;
+	        }
+
+	        .container {
+	            margin-top: 100px;
+	            background-color: #c7b6e0;
+	            border-radius: 20px;
+	            padding: 50px 60px;
+	            box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.2);
+	            animation: fadeInUp 1s ease-in-out;
+	        }
+
+	        h1, h2 {
+	            color: #276b07;
+	            font-weight: bold;
+	            text-align: center;
+	            margin-bottom: 40px;
+	            animation: fadeIn 1.5s ease-in-out;
+	        }
+
+	        .lead {
+	            font-size: 1.3rem;
+	            text-align: center;
+	            margin-bottom: 50px;
+	            color: #495057;
+	            animation: fadeIn 2s ease-in-out;
+	        }
+
+	        .btn-lg {
+	            font-size: 1.2rem;
+	            padding: 15px 35px;
+	            border-radius: 30px;
+	            box-shadow: 0px 10px 25px rgba(0, 123, 255, 0.3);
+	            transition: transform 0.3s, box-shadow 0.3s;
+	        }
+
+	        .btn-primary {
+	            background: linear-gradient(45deg, #1d2b64, #3e6bfa);
+	            border: none;
+	            color: #fff;
+	        }
+
+	        .btn-primary:hover {
+	            background: linear-gradient(45deg, #3e6bfa, #1d2b64);
+	            transform: translateY(-5px);
+	            box-shadow: 0px 15px 30px rgba(62, 107, 250, 0.5);
+	        }
+
+	        .btn-success {
+	            background: linear-gradient(45deg, #28a745, #85e085);
+	            border: none;
+	        }
+
+	        .btn-success:hover {
+	            background: linear-gradient(45deg, #85e085, #28a745);
+	            transform: translateY(-5px);
+	            box-shadow: 0px 15px 30px rgba(40, 167, 69, 0.5);
+	        }
+
+	        .teasers {
+	            margin-top: 70px;
+	            text-align: center;
+	        }
+
+	        .teaser-card {
+	            background: linear-gradient(135deg, #f8cdda, #ffcd94);
+	            color: #333;
+	            border: none;
+	            border-radius: 15px;
+	            margin-bottom: 40px;
+	            padding: 30px;
+	            transition: transform 0.3s ease, box-shadow 0.3s ease;
+	        }
+
+	        .teaser-card:hover {
+	            transform: translateY(-10px) scale(1.05);
+	            box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.3);
+	        }
+
+	        .img-container img {
+	            max-width: 100%;
+	            border-radius: 15px;
+	            box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.1);
+	            animation: zoomIn 2s ease-in-out;
+	            transition: transform 0.3s ease;
+	        }
+
+	        .img-container img:hover {
+	            transform: scale(1.05);
+	        }
+
+	        nav a.nav-link {
+	            transition: color 0.3s ease, transform 0.3s ease;
+	        }
+
+	        nav a.nav-link:hover {
+	            color: #f8cdda !important;
+	            transform: scale(1.1);
+	        }
+
+	        footer {
+	            background: linear-gradient(45deg, #1d2b64, #3e6bfa);
+	            color: #fff;
+	            padding: 40px;
+	            text-align: center;
+	            border-top: 5px solid #1d2b64;
+	            animation: slideUp 1.5s ease-in-out;
+	            margin-top: 100px;
+	        }
+
+	        footer a {
+	            color: #fff;
+	            text-decoration: none;
+	            font-weight: bold;
+	            transition: color 0.3s ease;
+	        }
+
+	        footer a:hover {
+	            color: #f8cdda;
+	        }
+
+	        /* Animations */
+	        @keyframes gradientShift {
+	            0% {
+	                background: linear-gradient(135deg, #1d2b64 0%, #f8cdda 100%);
+	            }
+	            100% {
+	                background: linear-gradient(135deg, #f8cdda 0%, #1d2b64 100%);
+	            }
+	        }
+
+	        @keyframes fadeIn {
+	            0% {
+	                opacity: 0;
+	                transform: translateY(20px);
+	            }
+	            100% {
+	                opacity: 1;
+	                transform: translateY(0);
+	            }
+	        }
+
+	        @keyframes fadeInUp {
+	            0% {
+	                opacity: 0;
+	                transform: translateY(40px);
+	            }
+	            100% {
+	                opacity: 1;
+	                transform: translateY(0);
+	            }
+	        }
+
+	        @keyframes zoomIn {
+	            0% {
+	                transform: scale(0.8);
+	                opacity: 0;
+	            }
+	            100% {
+	                transform: scale(1);
+	                opacity: 1;
+	            }
+	        }
+
+	        @keyframes slideUp {
+	            0% {
+	                opacity: 0;
+	                transform: translateY(20px);
+	            }
+	            100% {
+	                opacity: 1;
+	                transform: translateY(0);
+	            }
+	        }
+			
+			@keyframes bounceIn {
+			        0% {
+			            opacity: 0;
+			            transform: scale(0.3);
+			        }
+			        50% {
+			            opacity: 0.5;
+			            transform: scale(1.05);
+			        }
+			        70% {
+			            opacity: 0.7;
+			            transform: scale(0.9);
+			        }
+			        100% {
+			            opacity: 1;
+			            transform: scale(1);
+			        }
+			    }
+
+			    /* Apply the bounce-in animation */
+			    h1 {
+			        animation: bounceIn 2s ease-in-out;
+			    }
+	    </style>
+	</head>
 <body>
 
-<div class="container">
-    <h1>Welcome to the Expense Tracker</h1>
-    <p class="lead">Manage your expenses easily and track your spending.</p>
-    <div class="row">
-        <div class="col">
-            <a href="/login" class="btn btn-primary btn-lg">Login</a>
-        </div>
-        <div class="col">
-            <a href="/register" class="btn btn-success btn-lg">Register</a>
-        </div>
-    </div>
-</div>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-wallet"></i> Expense Tracker
+            </a>
+        </nav>
+    </header>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- Main Content -->
+	<div class="container">
+	    <h1>Welcome to the Expense Tracker</h1>
+	    <p class="lead">Manage your expenses easily and track your spending like a pro.</p>
+	    
+	    <!-- Expense Tracker Image -->
+	    <div class="img-container">
+	        <img src="https://i.imgur.com/6lnT4w0.png" alt="Expense Tracker">
+	    </div>
+		
+	    <!-- Login/Register Buttons -->
+	    <div class="button-container text-center mt-4">
+	        <a href="/login" class="btn btn-primary btn-lg mx-3">Login</a>
+	        <a href="/register" class="btn btn-success btn-lg mx-3">Register</a>
+	    </div>
+
+	    <!-- Why Choose Section -->
+	    <section class="why-choose-section text-center mt-5">
+	        <h2>Why Choose Expense Tracker ?</h2>
+	        <p class="lead">Our Expense Tracker offers features that make managing your finances simple, efficient, and insightful. Here's why:</p>
+	    </section>
+
+	    <!-- Teasers Section -->
+	    <div class="teasers">
+	        <div class="row">
+	            <div class="col-md-4">
+	                <div class="card teaser-card">
+	                    <div class="card-body">
+	                        <i class="fas fa-chart-line fa-2x"></i>
+	                        <p class="mt-3">Track your expenses and savings effortlessly!</p>
+	                    </div>
+	                </div>
+	            </div>
+	            <div class="col-md-4">
+	                <div class="card teaser-card">
+	                    <div class="card-body">
+	                        <i class="fas fa-credit-card fa-2x"></i>
+	                        <p class="mt-3">Simplify your spending with detailed reports.</p>
+	                    </div>
+	                </div>
+	            </div>
+	            <div class="col-md-4">
+	                <div class="card teaser-card">
+	                    <div class="card-body">
+	                        <i class="fas fa-wallet fa-2x"></i>
+	                        <p class="mt-3">Get insights on where your money goes.</p>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Expense Tracker. All rights reserved. <br><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

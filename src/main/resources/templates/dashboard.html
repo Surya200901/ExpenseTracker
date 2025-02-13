@@ -4,9 +4,262 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Add Chart.js CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #89f7fe, #66a6ff);
+            color: #333;
+            animation: backgroundShift 10s infinite alternate;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1d2671, #c33764);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 5px solid #fff;
+            animation: slideDown 1.5s ease-in-out;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        header nav a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        header nav a:hover {
+            color: #f8cdda;
+            transform: scale(1.1);
+        }
+
+        section {
+            padding: 20px 40px;
+            animation: fadeUp 2s ease-in-out;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 20px 0;
+            color: #1d2671;
+            animation: pulse 1.5s infinite;
+        }
+
+        #overview p {
+            background: #ff9a9e;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-weight: bold;
+            text-align: center;
+            animation: bounceIn 1.5s ease-in-out;
+        }
+
+        .budget-section p {
+            background: #42e695;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+            animation: flash 2s infinite;
+        }
+
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        table th, table td {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        table th {
+            background: #89f7fe;
+            color: white;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul li {
+            padding: 15px;
+            margin: 10px 0;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            color: #333;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            animation: slideInLeft 1s ease-in-out;
+        }
+
+        .recent-transactions-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .recent-transactions-container:hover {
+            transform: translateY(-10px);
+        }
+
+        .recent-transactions-container h3 {
+            font-size: 1.5rem;
+            color: #1d2671;
+            margin-bottom: 15px;
+        }
+
+        .recent-transactions-container ul {
+            padding-left: 20px;
+        }
+
+        .recent-transactions-container ul li {
+            background: #f8cdda;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .recent-transactions-container ul li span {
+            font-weight: bold;
+        }
+
+        .recent-transactions-container ul li span:first-child {
+            color: #ff6347;
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #1d2671;
+            color: white;
+            margin-top: 20px;
+            animation: slideUp 1.5s ease-in-out;
+        }
+
+        footer p {
+            font-size: 1rem;
+        }
+
+        /* Animations */
+        @keyframes backgroundShift {
+            0% {
+                background: linear-gradient(135deg, #89f7fe, #66a6ff);
+            }
+            100% {
+                background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes flash {
+            0%, 50%, 100% {
+                opacity: 1;
+            }
+            25%, 75% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -16,8 +269,8 @@
             <a href="/incomeform">Add Income</a>
             <a href="/expenseform">Add Expense</a>
             <a href="/dashboard">Dashboard</a>
-			<a href="/budgetsetting">Budget-Setting</a>
-			<a href="/login">Logout</a>
+            <a href="/budgetsetting">Budget-Setting</a>
+            <a href="/login">Logout</a>
         </nav>
     </header>
     <section>
@@ -27,34 +280,35 @@
             <p>Total Expenses: <span th:text="${totalExpenses}">Total Expenses</span></p>
             <p>Total Savings: <span th:text="${totalSavings}">Total Savings</span></p>
         </div>
-		
-		<div class="budget-section">
-		    <h2>Current Month's Budget</h2>
-		    <p th:text="'$' + ${currentBudget}"></p>
-		</div>
 
-        <!-- Income and Expense Trends (Graph Representation) -->
+        <div class="budget-section">
+            <h2>Current Month's Budget</h2>
+            <p th:text="'$' + ${currentBudget}"></p>
+        </div>
+
         <h2>Income and Expense Trends (Last 6 Months)</h2>
         <div style="width: 80%; margin: 0 auto;">
             <canvas id="incomeExpenseChart"></canvas>
         </div>
 
-        <h2>Recent Transactions</h2>
-        <ul id="recentTransactions">
-            <li th:each="transaction : ${recentTransactions}">
-                <span th:text="${transaction instanceof T(com.expensetracker.model.Expense) ? 'Expense' : 'Income'}"></span> - 
-                <span th:text="${transaction instanceof T(com.expensetracker.model.Expense) ? transaction.category : transaction.source}"></span>: 
-                <span th:text="${transaction.amount}"></span> on
-                <span th:text="${transaction.date}"></span>
-            </li>
-        </ul>
+        <div class="recent-transactions-container">
+            <h3>Recent Transactions</h3>
+            <ul id="recentTransactions">
+                <li th:each="transaction : ${recentTransactions}">
+                    <span th:text="${transaction instanceof T(com.expensetracker.model.Expense) ? 'Expense' : 'Income'}"></span> - 
+                    <span th:text="${transaction instanceof T(com.expensetracker.model.Expense) ? transaction.category : transaction.source}"></span>: 
+                    <span th:text="${transaction.amount}"></span> on
+                    <span th:text="${transaction.date}"></span>
+                </li>
+            </ul>
+        </div>
 
         <h2>Category-wise Spending</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Category</th>
                     <th>Amount</th>
+                    <th>Category</th>
                 </tr>
             </thead>
             <tbody>
@@ -102,88 +356,31 @@
         </table>
     </section>
 
+    <footer>
+        <p>&copy; 2024 Expense Tracker. All Rights Reserved.</p>
+    </footer>
+
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            fetchDashboardData();
-        });
-
-        function fetchDashboardData() {
-            fetch('/dashboard/overview')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('overview').innerHTML = `
-                        <p>Total Income: $${data.totalIncome}</p>
-                        <p>Total Expenses: $${data.totalExpenses}</p>
-                        <p>Total Savings: $${data.totalSavings}</p>
-                    `;
-                });
-
-            fetch('/dashboard/recent-transactions')
-                .then(response => response.json())
-                .then(data => {
-                    const transactionsList = document.getElementById('recentTransactions');
-                    transactionsList.innerHTML = `
-                        <h3>Recent Income</h3>
-                        <ul>${data.recentIncome.map(income => `<li>${income.description}: $${income.amount}</li>`).join('')}</ul>
-                        <h3>Recent Expenses</h3>
-                        <ul>${data.recentExpenses.map(expense => `<li>${expense.description}: $${expense.amount}</li>`).join('')}</ul>
-                    `;
-                });
-
-            fetch('/dashboard/spending-analysis')
-                .then(response => response.json())
-                .then(data => {
-                    const analysisChart = document.getElementById('analysis-chart');
-                    analysisChart.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-                });
-        }
-
-        var incomeTrendsJson = /*[[${incomeTrendsJson}]]*/ '[]';
-        var expenseTrendsJson = /*[[${expenseTrendsJson}]]*/ '[]';
-
-        var incomeData = JSON.parse(incomeTrendsJson);
-        var expenseData = JSON.parse(expenseTrendsJson);
-
-        var months = incomeData.map(entry => entry.month);
-        var incomeAmounts = incomeData.map(entry => entry.amount);
-        var expenseAmounts = expenseData.map(entry => entry.amount);
-
+        // Chart.js setup for Income vs Expense Chart
         var ctx = document.getElementById('incomeExpenseChart').getContext('2d');
         var incomeExpenseChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: months,
-                datasets: [
-                    {
-                        label: 'Income',
-                        data: incomeAmounts,
-                        borderColor: 'green',
-                        backgroundColor: 'rgba(0, 255, 0, 0.1)',
-                        fill: true
-                    },
-                    {
-                        label: 'Expense',
-                        data: expenseAmounts,
-                        borderColor: 'red',
-                        backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                        fill: true
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'Amount' }
-                    },
-                    x: {
-                        title: { display: true, text: 'Months' }
-                    }
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Income',
+                    data: [1000, 1200, 1300, 1100, 1400, 1500],
+                    borderColor: 'green',
+                    borderWidth: 2,
+                    fill: false
                 },
-                plugins: {
-                    legend: { position: 'top' }
-                }
+                {
+                    label: 'Expense',
+                    data: [800, 900, 1000, 950, 1100, 1200],
+                    borderColor: 'red',
+                    borderWidth: 2,
+                    fill: false
+                }]
             }
         });
     </script>
